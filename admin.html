@@ -186,7 +186,7 @@ header .actions { display: flex; gap: 15px; }
           <div class="form-group"><label>Zvuk</label><select id="movieSound"><option>5.1 DD</option><option>7.1 DD</option><option>Stereo</option></select></div>
           <div class="form-group"><label>Rating</label><select id="movieRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option><option>12+</option><option>18+</option><option>U</option><option>12A</option><option>NC-17</option><option>TV-PG</option></select></div>
           <div class="form-group"><label>Trvání (min)</label><input type="text" id="movieDuration"></div>
-          <div class="form-group"><label>Kategorie</label><select id="movieCategory"><option value="filmy">Filmy</option><option value="disney">Disney+</option><option value="netflix">Netflix</option><option value="hbo">HBO MAX</option></select></div>
+          <div class="form-group"><label>Kategorie</label><select id="movieCategory"><option value="Filmy">Filmy</option><option value="Disney+">Disney+</option><option value="Netflix">Netflix</option><option value="HBO MAX">HBO MAX</option></select></div>
           <div class="form-group"><label>Žánry (čárkou oddělené)</label><input type="text" id="movieGenres" placeholder="Drama, Komedie"></div>
           <div class="form-group full-width"><label>Popis</label><textarea id="movieDescription"></textarea></div>
           <div class="form-group full-width"><label>YouTube Trailer URL</label><input type="url" id="movieTrailer" placeholder="https://www.youtube.com/embed/..."></div>
@@ -252,8 +252,10 @@ header .actions { display: flex; gap: 15px; }
       <form id="trailerForm">
         <div class="form-grid">
           <div class="form-group"><label>Název *</label><input type="text" id="trailerTitle" required></div>
+          <div class="form-group"><label>Movie ID *</label><input type="text" id="trailerMovieId" placeholder="ID filmu" required></div>
           <div class="form-group"><label>YouTube ID</label><input type="text" id="trailerYoutubeId" placeholder="dQw4w9WgXcQ"></div>
-          <div class="form-group"><label>Logo URL</label><input type="url" id="trailerLogo" required></div>
+          <div class="form-group"><label>Thumbnail URL *</label><input type="url" id="trailerThumbnail" placeholder="https://..." required></div>
+          <div class="form-group"><label>Logo URL</label><input type="url" id="trailerLogo"></div>
           <div class="form-group"><label>IMDb</label><input type="text" id="trailerImdb"></div>
           <div class="form-group"><label>Kvalita</label><select id="trailerQuality"><option>2160p</option><option>1080p</option></select></div>
           <div class="form-group"><label>Rating</label><select id="trailerRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option><option>12+</option><option>18+</option><option>U</option><option>12A</option><option>NC-17</option><option>TV-PG</option></select></div>
@@ -407,7 +409,9 @@ document.getElementById('trailerForm').addEventListener('submit', function(e) {
   e.preventDefault();
   var trailer = {
     title: document.getElementById('trailerTitle').value,
+    movieId: document.getElementById('trailerMovieId').value,
     youtube: document.getElementById('trailerYoutubeId').value,
+    thumbnail: document.getElementById('trailerThumbnail').value,
     logo: document.getElementById('trailerLogo').value,
     imdb: document.getElementById('trailerImdb').value,
     quality: document.getElementById('trailerQuality').value,
@@ -425,7 +429,7 @@ document.getElementById('trailerForm').addEventListener('submit', function(e) {
 function loadMovies() {
   fetch('/api/movies').then(res => res.json()).then(movies => {
     document.getElementById('moviesList').innerHTML = movies.map(m => 
-      '<div class="list-item"><div class="list-item-header">' + m.title + '</div><div class="list-item-meta">' + m.year + ' • ' + m.quality + '</div><div class="list-item-actions"><button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="editMovie(' + m.id + ')">✏️ Upravit</button><button class="delete-btn" onclick="deleteMovie(' + m.id + ')">🗑️ Smazat</button></div></div>'
+      '<div class="list-item"><div class="list-item-header">' + m.title + '</div><div class="list-item-meta">' + m.year + ' • ' + m.quality + ' • ' + m.category + '</div><div class="list-item-actions"><button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="editMovie(' + m.id + ')">✏️ Upravit</button><button class="delete-btn" onclick="deleteMovie(' + m.id + ')">🗑️ Smazat</button></div></div>'
     ).join('');
     document.getElementById('previewMovies').innerHTML = movies.map(m => '<div class="list-item"><div class="list-item-header">' + m.title + '</div><div class="list-item-meta">' + m.year + ' • ' + m.quality + ' • IMDb: ' + m.imdb + '</div></div>').join('');
   });
@@ -443,9 +447,9 @@ function loadSeries() {
 function loadTrailers() {
   fetch('/api/trailers').then(res => res.json()).then(trailers => {
     document.getElementById('trailersList').innerHTML = trailers.map(t => 
-      '<div class="list-item"><div class="list-item-header">' + t.title + '</div><div class="list-item-meta">' + t.year + ' • IMDb: ' + t.imdb + '</div><div class="list-item-actions"><button class="delete-btn" onclick="deleteTrailer(' + t.id + ')">🗑️ Smazat</button></div></div>'
+      '<div class="list-item"><div class="list-item-header">' + t.title + '</div><div class="list-item-meta">Film ID: ' + t.movieId + ' • IMDb: ' + t.imdb + '</div><div class="list-item-actions"><button class="delete-btn" onclick="deleteTrailer(' + t.id + ')">🗑️ Smazat</button></div></div>'
     ).join('');
-    document.getElementById('previewTrailers').innerHTML = trailers.map(t => '<div class="list-item"><div class="list-item-header">' + t.title + '</div><div class="list-item-meta">' + t.year + ' • ' + t.duration + '</div></div>').join('');
+    document.getElementById('previewTrailers').innerHTML = trailers.map(t => '<div class="list-item"><div class="list-item-header">' + t.title + '</div><div class="list-item-meta">Film ID: ' + t.movieId + ' • ' + t.year + '</div></div>').join('');
   });
 }
 
@@ -463,22 +467,21 @@ function editMovie(id) {
   fetch('/api/movies/' + id).then(res => res.json()).then(m => {
     document.getElementById('movieId').value = m.id;
     document.getElementById('movieTitle').value = m.title;
-    document.getElementById('movieYear').value = m.year || '';
-    document.getElementById('movieImdb').value = m.imdb || '';
-    document.getElementById('moviePoster').value = m.poster || '';
-    document.getElementById('movieLogo').value = m.logo || '';
-    document.getElementById('movieBackground').value = m.background || '';
-    document.getElementById('movieQuality').value = m.quality || '2160p 4K';
-    document.getElementById('movieSound').value = m.sound || '5.1 DD';
-    document.getElementById('movieRating').value = m.rating || 'PG';
-    document.getElementById('movieDuration').value = m.duration || '';
-    document.getElementById('movieGenres').value = (m.genres || []).join(', ');
-    document.getElementById('movieDescription').value = m.description || '';
-    document.getElementById('movieTrailer').value = m.trailer || '';
-    document.getElementById('movieHls').value = m.hls || '';
-    document.getElementById('movieCategory').value = m.category || 'filmy';
+    document.getElementById('movieYear').value = m.year;
+    document.getElementById('movieImdb').value = m.imdb;
+    document.getElementById('moviePoster').value = m.poster;
+    document.getElementById('movieLogo').value = m.logo;
+    document.getElementById('movieBackground').value = m.background;
+    document.getElementById('movieQuality').value = m.quality;
+    document.getElementById('movieSound').value = m.sound;
+    document.getElementById('movieRating').value = m.rating;
+    document.getElementById('movieDuration').value = m.duration;
+    document.getElementById('movieCategory').value = m.category;
+    document.getElementById('movieGenres').value = m.genres ? m.genres.join(', ') : '';
+    document.getElementById('movieDescription').value = m.description;
+    document.getElementById('movieTrailer').value = m.trailer;
+    document.getElementById('movieHls').value = m.hls;
     switchTab('filmy');
-    window.scrollTo(0, 0);
   });
 }
 
@@ -486,30 +489,27 @@ function editSeries(id) {
   fetch('/api/series/' + id).then(res => res.json()).then(s => {
     document.getElementById('seriesId').value = s.id;
     document.getElementById('seriesTitle').value = s.title;
-    document.getElementById('seriesYear').value = s.year || '';
-    document.getElementById('seriesImdb').value = s.imdb || '';
-    document.getElementById('seriesLogo').value = s.logo || '';
-    document.getElementById('seriesBackground').value = s.background || '';
-    document.getElementById('seriesQuality').value = s.quality || '2160p 4K';
-    document.getElementById('seriesSound').value = s.sound || '5.1 DD';
-    document.getElementById('seriesRating').value = s.rating || 'PG';
-    document.getElementById('seriesSeasonCount').value = s.seasonCount || 1;
-    document.getElementById('seriesPosterS01').value = s.posterS01 || '';
-    document.getElementById('seriesGenres').value = (s.genres || []).join(', ');
-    document.getElementById('seriesDescription').value = s.description || '';
-    document.getElementById('seriesTrailer').value = s.trailer || '';
+    document.getElementById('seriesYear').value = s.year;
+    document.getElementById('seriesImdb').value = s.imdb;
+    document.getElementById('seriesLogo').value = s.logo;
+    document.getElementById('seriesBackground').value = s.background;
+    document.getElementById('seriesQuality').value = s.quality;
+    document.getElementById('seriesSound').value = s.sound;
+    document.getElementById('seriesRating').value = s.rating;
+    document.getElementById('seriesSeasonCount').value = s.seasonCount;
+    document.getElementById('seriesPosterS01').value = s.posterS01;
+    document.getElementById('seriesGenres').value = s.genres ? s.genres.join(', ') : '';
+    document.getElementById('seriesDescription').value = s.description;
+    document.getElementById('seriesTrailer').value = s.trailer;
     seasonEpisodes = s.episodes || [];
     renderEpisodes();
     switchTab('serialy');
-    window.scrollTo(0, 0);
   });
 }
 
 function logout() {
-  if (confirm('Opravdu se odhlásit?')) {
-    sessionStorage.removeItem('adminLoggedIn');
-    window.location.href = 'index.html';
-  }
+  localStorage.removeItem('adminLogged');
+  window.location.href = 'index.html';
 }
 
 loadMovies();
@@ -517,6 +517,6 @@ loadSeries();
 loadTrailers();
 updateStats();
 </script>
+
 </body>
 </html>
-
