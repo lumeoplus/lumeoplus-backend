@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lumeo+ Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Inter, system-ui, sans-serif; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); color: #e7eef6; min-height: 100vh; }
+
+header { 
+  position: fixed; top: 0; left: 0; right: 0; height: 70px; 
+  display: flex; align-items: center; justify-content: space-between; 
+  padding: 0 30px; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); 
+  z-index: 100; border-bottom: 2px solid rgba(229,9,20,0.3);
+}
+
+header .logo { display: flex; align-items: center; gap: 15px; }
+header .logo img { height: 45px; }
+header .logo h1 { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #e50914, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+header .actions { display: flex; gap: 15px; }
+
+.btn { 
+  padding: 10px 20px; border-radius: 8px; border: none; 
+  font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; 
+}
+.btn-primary { background: linear-gradient(135deg, #e50914, #b20710); color: white; }
+.btn-danger { background: #dc3545; color: white; }
+.btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+.container { margin-top: 90px; padding: 30px 40px; max-width: 1600px; margin-left: auto; margin-right: auto; }
+
+.tabs { 
+  display: flex; gap: 10px; margin-bottom: 30px; 
+  border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; flex-wrap: wrap;
+}
+
+.tab { 
+  padding: 12px 24px; background: transparent; border: none; 
+  color: #888; font-size: 15px; font-weight: 600; cursor: pointer; 
+  border-radius: 8px; transition: all 0.3s; position: relative;
+}
+
+.tab.active { 
+  color: white; background: rgba(229,9,20,0.2);
+  border-bottom: 3px solid #e50914;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.card { 
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(229,9,20,0.2);
+  border-radius: 15px; padding: 25px; margin-bottom: 25px;
+}
+
+.card h2 { 
+  font-size: 20px; margin-bottom: 20px; padding-bottom: 15px;
+  border-bottom: 2px solid rgba(229,9,20,0.3); color: #ff9999;
+}
+
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.form-grid.two-cols { grid-template-columns: repeat(2, 1fr); }
+.form-grid.full { grid-template-columns: 1fr; }
+
+.form-group { margin-bottom: 15px; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label { 
+  display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; 
+  color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.form-group input, .form-group select, .form-group textarea { 
+  width: 100%; padding: 12px 15px; 
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px; color: white; font-size: 14px; font-family: Inter;
+  transition: all 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
+  outline: none; border-color: #e50914; background: rgba(229,9,20,0.1); 
+  box-shadow: 0 0 10px rgba(229,9,20,0.2);
+}
+
+.form-group textarea { resize: vertical; min-height: 100px; }
+
+.alert { 
+  padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px; border-left: 4px solid;
+}
+
+.alert.success { background: rgba(76,175,80,0.1); color: #4caf50; border-left-color: #4caf50; }
+.alert.error { background: rgba(244,67,54,0.1); color: #f44336; border-left-color: #f44336; }
+.alert-close { margin-left: auto; cursor: pointer; font-size: 20px; }
+
+.episodes-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 12px;
+  background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; max-height: 400px; overflow-y: auto;
+}
+
+.episode-item {
+  display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.05);
+  padding: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+}
+
+.episode-item input { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: white; }
+.episode-item button { padding: 6px 12px; background: #dc3545; border: none; color: white; border-radius: 5px; cursor: pointer; font-size: 12px; }
+
+.list-container {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px;
+}
+
+.list-item {
+  background: rgba(255,255,255,0.04); padding: 15px; border-radius: 10px;
+  border: 1px solid rgba(229,9,20,0.2); transition: all 0.3s;
+}
+
+.list-item:hover { transform: translateY(-2px); border-color: rgba(229,9,20,0.5); box-shadow: 0 5px 20px rgba(229,9,20,0.1); }
+
+.list-item-header { font-weight: 600; margin-bottom: 8px; color: #ff9999; }
+.list-item-meta { font-size: 12px; color: #888; margin-bottom: 10px; }
+.list-item-actions { display: flex; gap: 8px; }
+.delete-btn { padding: 6px 12px; background: #dc3545; border: none; color: white; border-radius: 5px; cursor: pointer; font-size: 12px; }
+
+.generator-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.generator-buttons button { padding: 8px 16px; font-size: 12px; }
+
+@media (max-width: 1200px) { 
+  .form-grid { grid-template-columns: repeat(2, 1fr); }
+  .list-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) { 
+  .form-grid { grid-template-columns: 1fr; }
+  .list-container { grid-template-columns: 1fr; }
+  .episodes-grid { grid-template-columns: 1fr; }
+}
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+.stat-card { background: rgba(229,9,20,0.1); border: 1px solid rgba(229,9,20,0.3); border-radius: 10px; padding: 20px; text-align: center; }
+.stat-number { font-size: 32px; font-weight: 700; color: #ff6b6b; }
+.stat-label { font-size: 12px; color: #888; margin-top: 5px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://i.ibb.co/Hf9dJxQ7/LUMEO-4-K-LOGO.png" alt="Lumeo+">
+    <h1>ADMIN PANEL</h1>
+  </div>
+  <div class="actions">
+    <button class="btn btn-secondary" onclick="window.location.href='index.html'" style="margin-right: 10px;">← Na web</button>
+    <button class="btn btn-danger" onclick="logout()">Odhlásit</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="alert"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('filmy')">📽️ Filmy</button>
+    <button class="tab" onclick="switchTab('serialy')">📺 Seriály</button>
+    <button class="tab" onclick="switchTab('trailery')">🎬 Trailery</button>
+    <button class="tab" onclick="switchTab('prehled')">📊 Přehled</button>
+  </div>
+
+  <!-- FILMY TAB -->
+  <div id="filmy-tab" class="tab-content active">
+    <div class="card">
+      <h2>➕ Přidat / Upravit film</h2>
+      <form id="movieForm">
+        <input type="hidden" id="movieId">
+        <div class="form-grid">
+          <div class="form-group"><label>Název *</label><input type="text" id="movieTitle" required></div>
+          <div class="form-group"><label>Rok</label><input type="text" id="movieYear"></div>
+          <div class="form-group"><label>IMDb</label><input type="text" id="movieImdb"></div>
+          <div class="form-group"><label>Poster URL</label><input type="url" id="moviePoster" placeholder="https://..."></div>
+          <div class="form-group"><label>Logo URL</label><input type="url" id="movieLogo"></div>
+          <div class="form-group"><label>Background URL</label><input type="url" id="movieBackground"></div>
+          <div class="form-group"><label>Kvalita</label><select id="movieQuality"><option>2160p 4K</option><option>1080p</option><option>720p</option></select></div>
+          <div class="form-group"><label>Zvuk</label><select id="movieSound"><option>5.1 DD</option><option>7.1 DD</option><option>Stereo</option></select></div>
+          <div class="form-group"><label>Rating</label><select id="movieRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option></select></div>
+          <div class="form-group"><label>Trvání (min)</label><input type="text" id="movieDuration"></div>
+          <div class="form-group"><label>Kategorie</label><select id="movieCategory"><option value="filmy">Filmy</option><option value="disney">Disney+</option><option value="netflix">Netflix</option><option value="hbo">HBO MAX</option></select></div>
+          <div class="form-group"><label>Žánry (čárkou oddělené)</label><input type="text" id="movieGenres" placeholder="Drama, Komedie"></div>
+          <div class="form-group full-width"><label>Popis</label><textarea id="movieDescription"></textarea></div>
+          <div class="form-group full-width"><label>YouTube Trailer URL</label><input type="url" id="movieTrailer" placeholder="https://www.youtube.com/embed/..."></div>
+          <div class="form-group full-width"><label>HLS Stream URL</label><input type="url" id="movieHls" placeholder="https://.../master.m3u8"></div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">✅ Uložit film</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>📋 Filmy v databázi</h2>
+      <div id="moviesList" class="list-container"></div>
+    </div>
+  </div>
+
+  <!-- SERIÁLY TAB -->
+  <div id="serialy-tab" class="tab-content">
+    <div class="card">
+      <h2>➕ Přidat / Upravit seriál</h2>
+      <form id="seriesForm">
+        <input type="hidden" id="seriesId">
+        <div class="form-grid">
+          <div class="form-group"><label>Název *</label><input type="text" id="seriesTitle" required></div>
+          <div class="form-group"><label>Rok</label><input type="text" id="seriesYear"></div>
+          <div class="form-group"><label>IMDb</label><input type="text" id="seriesImdb"></div>
+          <div class="form-group"><label>Logo URL</label><input type="url" id="seriesLogo"></div>
+          <div class="form-group"><label>Background URL</label><input type="url" id="seriesBackground"></div>
+          <div class="form-group"><label>Kvalita</label><select id="seriesQuality"><option>2160p 4K</option><option>1080p</option><option>720p</option></select></div>
+          <div class="form-group"><label>Zvuk</label><select id="seriesSound"><option>5.1 DD</option><option>7.1 DD</option></select></div>
+          <div class="form-group"><label>Rating</label><select id="seriesRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option></select></div>
+          <div class="form-group"><label>Počet sérií</label><input type="number" id="seriesSeasonCount" value="1"></div>
+          <div class="form-group"><label>Poster S01</label><input type="url" id="seriesPosterS01"></div>
+          <div class="form-group full-width"><label>Žánry</label><input type="text" id="seriesGenres" placeholder="Drama, Sci-Fi"></div>
+          <div class="form-group full-width"><label>Popis</label><textarea id="seriesDescription"></textarea></div>
+          <div class="form-group full-width"><label>YouTube Trailer</label><input type="url" id="seriesTrailer"></div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <label style="color: #aaa; font-size: 13px; text-transform: uppercase; font-weight: 600;">🎬 Epizody (S01E01-S01E20 + HLS URL)</label>
+          <div class="generator-buttons">
+            <button type="button" onclick="generateEpisodes(5)" class="btn btn-secondary">Vytvořit 5 epizod</button>
+            <button type="button" onclick="generateEpisodes(10)" class="btn btn-secondary">Vytvořit 10 epizod</button>
+            <button type="button" onclick="generateEpisodes(20)" class="btn btn-secondary">Vytvořit 20 epizod</button>
+            <button type="button" onclick="clearEpisodes()" class="btn btn-danger" style="padding: 8px 12px;">Vymazat všechny</button>
+          </div>
+          <div class="episodes-grid" id="episodesList"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">✅ Uložit seriál</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>📋 Seriály v databázi</h2>
+      <div id="seriesList" class="list-container"></div>
+    </div>
+  </div>
+
+  <!-- TRAILERY TAB -->
+  <div id="trailery-tab" class="tab-content">
+    <div class="card">
+      <h2>➕ Přidat trailer</h2>
+      <form id="trailerForm">
+        <div class="form-grid">
+          <div class="form-group"><label>Název *</label><input type="text" id="trailerTitle" required></div>
+          <div class="form-group"><label>YouTube ID</label><input type="text" id="trailerYoutubeId" placeholder="dQw4w9WgXcQ"></div>
+          <div class="form-group"><label>Logo URL</label><input type="url" id="trailerLogo" required></div>
+          <div class="form-group"><label>IMDb</label><input type="text" id="trailerImdb"></div>
+          <div class="form-group"><label>Kvalita</label><select id="trailerQuality"><option>2160p</option><option>1080p</option></select></div>
+          <div class="form-group"><label>Rating</label><select id="trailerRating"><option>PG</option><option>R</option><option>15+</option></select></div>
+          <div class="form-group"><label>Trvání</label><input type="text" id="trailerDuration"></div>
+          <div class="form-group"><label>Rok</label><input type="text" id="trailerYear"></div>
+          <div class="form-group full-width"><label>Popis</label><textarea id="trailerDescription"></textarea></div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">✅ Přidat trailer</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>📋 Trailery v databázi</h2>
+      <div id="trailersList" class="list-container"></div>
+    </div>
+  </div>
+
+  <!-- PŘEHLED TAB -->
+  <div id="prehled-tab" class="tab-content">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="movieCount">0</div>
+        <div class="stat-label">Filmů</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="seriesCount">0</div>
+        <div class="stat-label">Seriálů</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="trailerCount">0</div>
+        <div class="stat-label">Trailerů</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎬 Všechny nahrané filmy</h2>
+      <div id="previewMovies" class="list-container"></div>
+    </div>
+
+    <div class="card">
+      <h2>📺 Všechny nahrané seriály</h2>
+      <div id="previewSeries" class="list-container"></div>
+    </div>
+
+    <div class="card">
+      <h2>🎞️ Všechny nahrané trailery</h2>
+      <div id="previewTrailers" class="list-container"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var seasonEpisodes = [];
+
+function showAlert(msg, type) {
+  var alertEl = document.getElementById('alert');
+  alertEl.innerHTML = '<div class="alert ' + type + '"><span>' + msg + '</span><span class="alert-close" onclick="this.parentElement.style.display=\'none\'">✕</span></div>';
+  setTimeout(() => { alertEl.innerHTML = ''; }, 4000);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(tab + '-tab').classList.add('active');
+  event.target.classList.add('active');
+}
+
+function generateEpisodes(count) {
+  seasonEpisodes = [];
+  for (let i = 1; i <= count; i++) {
+    seasonEpisodes.push({ name: 'S01E' + String(i).padStart(2, '0') + ' - Díl ' + i, hls: '' });
+  }
+  renderEpisodes();
+}
+
+function clearEpisodes() {
+  if (confirm('Opravdu smazat všechny epizody?')) {
+    seasonEpisodes = [];
+    renderEpisodes();
+  }
+}
+
+function renderEpisodes() {
+  var list = document.getElementById('episodesList');
+  list.innerHTML = seasonEpisodes.map((ep, i) => {
+    return '<div class="episode-item"><input type="text" value="' + (typeof ep === 'string' ? ep : ep.name) + '" onchange="seasonEpisodes[' + i + '].name = this.value;" placeholder="S01E01"><input type="url" value="' + (typeof ep === 'string' ? '' : ep.hls || '') + '" onchange="seasonEpisodes[' + i + '].hls = this.value;" placeholder="https://... (HLS URL)"><button type="button" onclick="seasonEpisodes.splice(' + i + ',1); renderEpisodes();" style="width: auto;">🗑️</button></div>';
+  }).join('');
+}
+
+document.getElementById('movieForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var genres = document.getElementById('movieGenres').value.split(',').map(g => g.trim()).filter(g => g);
+  var movie = {
+    title: document.getElementById('movieTitle').value,
+    year: document.getElementById('movieYear').value,
+    imdb: document.getElementById('movieImdb').value,
+    poster: document.getElementById('moviePoster').value,
+    logo: document.getElementById('movieLogo').value,
+    background: document.getElementById('movieBackground').value,
+    quality: document.getElementById('movieQuality').value,
+    sound: document.getElementById('movieSound').value,
+    rating: document.getElementById('movieRating').value,
+    duration: document.getElementById('movieDuration').value,
+    genres: genres,
+    description: document.getElementById('movieDescription').value,
+    trailer: document.getElementById('movieTrailer').value,
+    hls: document.getElementById('movieHls').value,
+    category: document.getElementById('movieCategory').value,
+    type: 'movie'
+  };
+  var id = document.getElementById('movieId').value;
+  var method = id ? 'PUT' : 'POST';
+  var url = id ? '/api/movies/' + id : '/api/movies';
+  fetch(url, { method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(movie) })
+    .then(res => res.json())
+    .then(data => { showAlert('✅ Film uložen!', 'success'); this.reset(); loadMovies(); updateStats(); })
+    .catch(err => showAlert('❌ Chyba: ' + err.message, 'error'));
+});
+
+document.getElementById('seriesForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var genres = document.getElementById('seriesGenres').value.split(',').map(g => g.trim()).filter(g => g);
+  var episodes = seasonEpisodes.map(ep => typeof ep === 'string' ? {name: ep, hls: ''} : ep);
+  var series = {
+    title: document.getElementById('seriesTitle').value,
+    year: document.getElementById('seriesYear').value,
+    imdb: document.getElementById('seriesImdb').value,
+    logo: document.getElementById('seriesLogo').value,
+    background: document.getElementById('seriesBackground').value,
+    quality: document.getElementById('seriesQuality').value,
+    sound: document.getElementById('seriesSound').value,
+    rating: document.getElementById('seriesRating').value,
+    seasonCount: parseInt(document.getElementById('seriesSeasonCount').value),
+    episodes: episodes,
+    posterS01: document.getElementById('seriesPosterS01').value,
+    genres: genres,
+    description: document.getElementById('seriesDescription').value,
+    trailer: document.getElementById('seriesTrailer').value,
+    type: 'series'
+  };
+  var id = document.getElementById('seriesId').value;
+  var method = id ? 'PUT' : 'POST';
+  var url = id ? '/api/series/' + id : '/api/series';
+  fetch(url, { method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(series) })
+    .then(res => res.json())
+    .then(data => { showAlert('✅ Seriál uložen!', 'success'); this.reset(); seasonEpisodes = []; renderEpisodes(); loadSeries(); updateStats(); })
+    .catch(err => showAlert('❌ Chyba: ' + err.message, 'error'));
+});
+
+document.getElementById('trailerForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var trailer = {
+    title: document.getElementById('trailerTitle').value,
+    youtube: document.getElementById('trailerYoutubeId').value,
+    logo: document.getElementById('trailerLogo').value,
+    imdb: document.getElementById('trailerImdb').value,
+    quality: document.getElementById('trailerQuality').value,
+    rating: document.getElementById('trailerRating').value,
+    duration: document.getElementById('trailerDuration').value,
+    year: document.getElementById('trailerYear').value,
+    description: document.getElementById('trailerDescription').value
+  };
+  fetch('/api/trailers', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(trailer) })
+    .then(res => res.json())
+    .then(data => { showAlert('✅ Trailer přidán!', 'success'); this.reset(); loadTrailers(); updateStats(); })
+    .catch(err => showAlert('❌ Chyba: ' + err.message, 'error'));
+});
+
+function loadMovies() {
+  fetch('/api/movies').then(res => res.json()).then(movies => {
+    document.getElementById('moviesList').innerHTML = movies.map(m => 
+      '<div class="list-item"><div class="list-item-header">' + m.title + '</div><div class="list-item-meta">' + m.year + ' • ' + m.quality + '</div><div class="list-item-actions"><button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="editMovie(' + m.id + ')">✏️ Upravit</button><button class="delete-btn" onclick="deleteMovie(' + m.id + ')">🗑️ Smazat</button></div></div>'
+    ).join('');
+    document.getElementById('previewMovies').innerHTML = movies.map(m => '<div class="list-item"><div class="list-item-header">' + m.title + '</div><div class="list-item-meta">' + m.year + ' • ' + m.quality + ' • IMDb: ' + m.imdb + '</div></div>').join('');
+  });
+}
+
+function loadSeries() {
+  fetch('/api/series').then(res => res.json()).then(series => {
+    document.getElementById('seriesList').innerHTML = series.map(s => 
+      '<div class="list-item"><div class="list-item-header">' + s.title + '</div><div class="list-item-meta">' + s.year + ' • S' + s.seasonCount + ' • ' + (s.episodes ? s.episodes.length : 0) + ' epizod</div><div class="list-item-actions"><button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="editSeries(' + s.id + ')">✏️ Upravit</button><button class="delete-btn" onclick="deleteSeries(' + s.id + ')">🗑️ Smazat</button></div></div>'
+    ).join('');
+    document.getElementById('previewSeries').innerHTML = series.map(s => '<div class="list-item"><div class="list-item-header">' + s.title + '</div><div class="list-item-meta">' + s.year + ' • Sérií: ' + s.seasonCount + ' • Epizod: ' + (s.episodes ? s.episodes.length : 0) + '</div></div>').join('');
+  });
+}
+
+function loadTrailers() {
+  fetch('/api/trailers').then(res => res.json()).then(trailers => {
+    document.getElementById('trailersList').innerHTML = trailers.map(t => 
+      '<div class="list-item"><div class="list-item-header">' + t.title + '</div><div class="list-item-meta">' + t.year + ' • IMDb: ' + t.imdb + '</div><div class="list-item-actions"><button class="delete-btn" onclick="deleteTrailer(' + t.id + ')">🗑️ Smazat</button></div></div>'
+    ).join('');
+    document.getElementById('previewTrailers').innerHTML = trailers.map(t => '<div class="list-item"><div class="list-item-header">' + t.title + '</div><div class="list-item-meta">' + t.year + ' • ' + t.duration + '</div></div>').join('');
+  });
+}
+
+function updateStats() {
+  fetch('/api/movies').then(r => r.json()).then(m => document.getElementById('movieCount').textContent = m.length);
+  fetch('/api/series').then(r => r.json()).then(s => document.getElementById('seriesCount').textContent = s.length);
+  fetch('/api/trailers').then(r => r.json()).then(t => document.getElementById('trailerCount').textContent = t.length);
+}
+
+function deleteMovie(id) { if (confirm('Opravdu smazat?')) { fetch('/api/movies/' + id, {method: 'DELETE'}).then(() => { showAlert('✅ Smazáno!', 'success'); loadMovies(); updateStats(); }); } }
+function deleteSeries(id) { if (confirm('Opravdu smazat?')) { fetch('/api/series/' + id, {method: 'DELETE'}).then(() => { showAlert('✅ Smazáno!', 'success'); loadSeries(); updateStats(); }); } }
+function deleteTrailer(id) { if (confirm('Opravdu smazat?')) { fetch('/api/trailers/' + id, {method: 'DELETE'}).then(() => { showAlert('✅ Smazáno!', 'success'); loadTrailers(); updateStats(); }); } }
+
+function editMovie(id) {
+  fetch('/api/movies/' + id).then(res => res.json()).then(m => {
+    document.getElementById('movieId').value = m.id;
+    document.getElementById('movieTitle').value = m.title;
+    document.getElementById('movieYear').value = m.year || '';
+    document.getElementById('movieImdb').value = m.imdb || '';
+    document.getElementById('moviePoster').value = m.poster || '';
+    document.getElementById('movieLogo').value = m.logo || '';
+    document.getElementById('movieBackground').value = m.background || '';
+    document.getElementById('movieQuality').value = m.quality || '2160p 4K';
+    document.getElementById('movieSound').value = m.sound || '5.1 DD';
+    document.getElementById('movieRating').value = m.rating || 'PG';
+    document.getElementById('movieDuration').value = m.duration || '';
+    document.getElementById('movieGenres').value = (m.genres || []).join(', ');
+    document.getElementById('movieDescription').value = m.description || '';
+    document.getElementById('movieTrailer').value = m.trailer || '';
+    document.getElementById('movieHls').value = m.hls || '';
+    document.getElementById('movieCategory').value = m.category || 'filmy';
+    switchTab('filmy');
+    window.scrollTo(0, 0);
+  });
+}
+
+function editSeries(id) {
+  fetch('/api/series/' + id).then(res => res.json()).then(s => {
+    document.getElementById('seriesId').value = s.id;
+    document.getElementById('seriesTitle').value = s.title;
+    document.getElementById('seriesYear').value = s.year || '';
+    document.getElementById('seriesImdb').value = s.imdb || '';
+    document.getElementById('seriesLogo').value = s.logo || '';
+    document.getElementById('seriesBackground').value = s.background || '';
+    document.getElementById('seriesQuality').value = s.quality || '2160p 4K';
+    document.getElementById('seriesSound').value = s.sound || '5.1 DD';
+    document.getElementById('seriesRating').value = s.rating || 'PG';
+    document.getElementById('seriesSeasonCount').value = s.seasonCount || 1;
+    document.getElementById('seriesPosterS01').value = s.posterS01 || '';
+    document.getElementById('seriesGenres').value = (s.genres || []).join(', ');
+    document.getElementById('seriesDescription').value = s.description || '';
+    document.getElementById('seriesTrailer').value = s.trailer || '';
+    seasonEpisodes = s.episodes || [];
+    renderEpisodes();
+    switchTab('serialy');
+    window.scrollTo(0, 0);
+  });
+}
+
+function logout() {
+  if (confirm('Opravdu se odhlásit?')) {
+    sessionStorage.removeItem('adminLoggedIn');
+    window.location.href = 'index.html';
+  }
+}
+
+loadMovies();
+loadSeries();
+loadTrailers();
+updateStats();
+</script>
+</body>
+</html>
