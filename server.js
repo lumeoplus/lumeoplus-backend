@@ -8,6 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.static(__dirname));
+app.use(express.static("./"));
 
 const MOVIES_FILE = path.join(__dirname, "movies.json");
 const SERIES_FILE = path.join(__dirname, "series.json");
@@ -163,4 +164,5 @@ app.get("/", (req, res) => {
 const PORT = 5000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log("Lumeo+ server bezi na portu " + PORT);
+
 });
