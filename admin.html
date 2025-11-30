@@ -184,7 +184,7 @@ header .actions { display: flex; gap: 15px; }
           <div class="form-group"><label>Background URL</label><input type="url" id="movieBackground"></div>
           <div class="form-group"><label>Kvalita</label><select id="movieQuality"><option>2160p 4K</option><option>1080p</option><option>720p</option></select></div>
           <div class="form-group"><label>Zvuk</label><select id="movieSound"><option>5.1 DD</option><option>7.1 DD</option><option>Stereo</option></select></div>
-          <div class="form-group"><label>Rating</label><select id="movieRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option></select></div>
+          <div class="form-group"><label>Rating</label><select id="movieRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option><option>12+</option><option>18+</option><option>U</option><option>12A</option><option>NC-17</option><option>TV-PG</option></select></div>
           <div class="form-group"><label>Trvání (min)</label><input type="text" id="movieDuration"></div>
           <div class="form-group"><label>Kategorie</label><select id="movieCategory"><option value="filmy">Filmy</option><option value="disney">Disney+</option><option value="netflix">Netflix</option><option value="hbo">HBO MAX</option></select></div>
           <div class="form-group"><label>Žánry (čárkou oddělené)</label><input type="text" id="movieGenres" placeholder="Drama, Komedie"></div>
@@ -216,7 +216,7 @@ header .actions { display: flex; gap: 15px; }
           <div class="form-group"><label>Background URL</label><input type="url" id="seriesBackground"></div>
           <div class="form-group"><label>Kvalita</label><select id="seriesQuality"><option>2160p 4K</option><option>1080p</option><option>720p</option></select></div>
           <div class="form-group"><label>Zvuk</label><select id="seriesSound"><option>5.1 DD</option><option>7.1 DD</option></select></div>
-          <div class="form-group"><label>Rating</label><select id="seriesRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option></select></div>
+          <div class="form-group"><label>Rating</label><select id="seriesRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option><option>12+</option><option>18+</option><option>U</option><option>12A</option><option>NC-17</option><option>TV-PG</option></select></div>
           <div class="form-group"><label>Počet sérií</label><input type="number" id="seriesSeasonCount" value="1"></div>
           <div class="form-group"><label>Poster S01</label><input type="url" id="seriesPosterS01"></div>
           <div class="form-group full-width"><label>Žánry</label><input type="text" id="seriesGenres" placeholder="Drama, Sci-Fi"></div>
@@ -256,7 +256,7 @@ header .actions { display: flex; gap: 15px; }
           <div class="form-group"><label>Logo URL</label><input type="url" id="trailerLogo" required></div>
           <div class="form-group"><label>IMDb</label><input type="text" id="trailerImdb"></div>
           <div class="form-group"><label>Kvalita</label><select id="trailerQuality"><option>2160p</option><option>1080p</option></select></div>
-          <div class="form-group"><label>Rating</label><select id="trailerRating"><option>PG</option><option>R</option><option>15+</option></select></div>
+          <div class="form-group"><label>Rating</label><select id="trailerRating"><option>PG</option><option>PG-13</option><option>R</option><option>15+</option><option>12+</option><option>18+</option><option>U</option><option>12A</option><option>NC-17</option><option>TV-PG</option></select></div>
           <div class="form-group"><label>Trvání</label><input type="text" id="trailerDuration"></div>
           <div class="form-group"><label>Rok</label><input type="text" id="trailerYear"></div>
           <div class="form-group full-width"><label>Popis</label><textarea id="trailerDescription"></textarea></div>
@@ -519,3 +519,4 @@ updateStats();
 </script>
 </body>
 </html>
+
