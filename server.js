@@ -158,11 +158,12 @@ app.delete("/api/trailers/:id", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+  res.sendFile(path.join(process.cwd(), "index.html"));
+});;
 
 const PORT = 5000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log("Lumeo+ server bezi na portu " + PORT);
 
 });
+
